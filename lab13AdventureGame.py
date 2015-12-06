@@ -1,8 +1,13 @@
 """
-John Lester & Brittany Mazza
-CST 205 Multimedia Design and Programming
-
-Lab #13 Pt. 2: Adventure Game Updates 
+School: CSU, Monterey Bay
+Course: CST 205 Multimedia Design and Programming
+Instructor: Allie Xiong
+Assignment: Lab #13 Pt. 2: Adventure Game Updates
+Authors: John Lester & Brittany Mazza
+Date: December 2-8, 2015
+Filename: lab13AdventureGame.py
+Python Version: 2.2.1 (JES 4.3)
+Version: 1
 """
 
 # ------------------------------------------------------------------------------------------------------------
