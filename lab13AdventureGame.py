@@ -8,6 +8,17 @@ Date: December 2-8, 2015
 Filename: lab13AdventureGame.py
 Python Version: 2.2.1 (JES 4.3)
 Version: 1
+
+This program was originally written by Team #6. It has been pasted here and
+edited to make the changes that are asked in the prompt.
+
+Changes requested:
+    1. Use showInformation to pop up a welcome box at the beginning that
+       explains your game and add in other appropriate spots.
+    2. At the beginning of your game, ask the user to enter their name
+       (or to name their character). Use the user's name at least one
+       other place in your program.
+    3. Use a list somewhere in the game.
 """
 
 # ------------------------------------------------------------------------------------------------------------
@@ -47,11 +58,11 @@ autoStart = False
 # ------------------------------------------------------------------------------------------------------------
 
 winner = False
-hasSpaceSuit = False
+hasObjects = [False, False] # 0 is space suit, 1 is gun
 isSlideDoorOpen = False
-hasGun = False
 lastRoom = 0
 alienAlive = True
+name = ""
 
 # ------------------------------------------------------------------------------------------------------------
 # --------------------------------------------  Play game  ---------------------------------------------------
@@ -61,18 +72,17 @@ alienAlive = True
 # Params: (none)
 # Returns: (none)
 def play():
-  global hasSpaceSuit
+  global hasObjects
   global isSlideDoorOpen
   global winner
-  global hasGun
   global lastRoom
   global alienAlive
   global isDead
+  global name
   
   alienAlive = True
-  hasSpaceSuit = False
+  hasObjects = [False, False]
   isSlideDoorOpen = False
-  hasGun = False
   exiting = False
   winner = False
   room = 1 # Begin game in room 1 (medical bay)
@@ -80,6 +90,8 @@ def play():
   isDead = False
   
   displayHelp() # Welcome message and directions
+  name = requestString("Enter your name.") # Get user's name
+
   while room > 0:
     printNow("")
     if room == 1:
@@ -98,6 +110,7 @@ def play():
     printNow(" Safe in the missile with your space suit, you brace yourself for the engine to fire. It's only")
     printNow(" a matter of time before you are back on earth with your family again. Who knows what your next")
     printNow(" adventure will be...\n *")
+    printNow(" Congrats, " + name + "!!! You've successfully completed the game!")
   elif isDead == True:
     printNow(" This would be a great time to reflect on the poor decision you've made...except you're dead.")
     printNow(" Try again.")
@@ -126,9 +139,9 @@ def roomOne():
   global isSlideDoorOpen
 
   if not isAndUpdateLastRoom(1):
-    printNow(" -----  Medical Bay  -----")
-    printNow(" You are standing in the medical bay. To the south is an airlock. To the east is the utility tunnel.")
-    printNow(" To the north is a medical cabinet that looks like it has already been plundered for supplies.\n")
+    showInformation("-----  Medical Bay  -----" +
+      "\nYou are standing in the medical bay. To the south is an airlock. To the east is the utility tunnel." +
+      " To the north is a medical cabinet that looks like it has already been plundered for supplies.\n")
 
   cmd = getDirection()
   if cmd == "search cabinet":
@@ -170,20 +183,20 @@ def roomOne():
 #   Room name   -> "Space Walk Utility Room"
 #   Exits       -> West (utility tunnel)               to room 1 ("Medical Bay")
 #               -> South (airlock)                     to room 3 ("Cafeteria")
-#   * User can grab the space suit to win the game here (set hasSpaceSuit to True).
+#   * User can grab the space suit to win the game here (set hasObjects[0] to True).
 def roomTwo():
-  global hasSpaceSuit
+  global hasObjects
 
   if not isAndUpdateLastRoom(2):
-    printNow(" -----  Space Walk Utility Room  -----")
-    printNow(" You are standing in the space walk utility room. To the north is the utility tunnel to the medical")
-    printNow(" bay. To the south is an airlock.\n")
+    showInformation("-----  Space Walk Utility Room  -----" +
+      "\nYou are standing in the space walk utility room. To the north is the utility tunnel to the medical" +
+      "bay. To the south is an airlock.\n")
 
-  if hasSpaceSuit == False: 
+  if not hasObjects[0]:
     printNow(" There is a space suit here.")
   cmd = getDirection() 
-  if "get" in cmd and "suit" in cmd and not hasSpaceSuit: # Looking for something like "get space suit"
-     hasSpaceSuit = True
+  if "get" in cmd and "suit" in cmd and not hasObjects[0]: # Looking for something like "get space suit"
+     hasObjects[0] = True
      printNow(" You have picked up the space suit.")
      cmd = getDirection() 
   if cmd == "north" or cmd == "n": 
@@ -210,23 +223,23 @@ def roomTwo():
 #   Exits       -> North (airlock)                     to room 2 ("Space Walk Utility Room")
 #               -> West (catwalk)                      to room 4 ("Transit Bay")
 def roomThree():
-  global hasGun
+  global hasObjects
   global alienAlive # Don't go shooting up the place if the alien is dead
   global isDead
 
   if not isAndUpdateLastRoom(3):
-    printNow(" -----  Cafeteria  -----")
-    printNow(" You are standing in the cafeteria. To the west is a catwalk that looks like it could be sketchy. To")
-    printNow(" the north is an airlock.\n")
+    showInformation(" -----  Cafeteria  -----" +
+      "\n You are standing in the cafeteria. To the west is a catwalk that looks like it could be sketchy. To" +
+      " the north is an airlock.\n")
 
     if alienAlive:
        printNow(" In the corner of the room there is a shadow of what looks like a person. Possibly a survivor?\n")
 
   cmd = getDirection()
   if alienAlive and "hello" in cmd: # Why would you tell hello at an alien, somebody has to die now...
-    if hasGun:
+    if hasObjects[1]:
       printNow(" You say hello and the dark figure turns around slowly to reveal a large alien with a hideous insect-like face.")
-    if hasGun:
+    if hasObjects[1]:
       printNow(" face. Before you can take a breath you have shot the gun and fired again and again for what seems like")
       printNow(" minutes, but is actually only a few seconds. The alien falls to the ground and shrivels into a round mass")
       printNow(" of inert exoskeleton.")
@@ -265,18 +278,18 @@ def roomThree():
 #               -> North (airlock) to room 1 ("Medical Bay")
 #               -> West (ladder)   to room 5 ("Missile Room")
 def roomFour():
-  global hasGun
+  global hasObjects
 
   if not isAndUpdateLastRoom(4):
-    printNow(" -----  Transit Bay  -----")
-    printNow(" You are standing in the transit bay. To the east is a catwalk. To the north is an airlock. There")
-    printNow(" is a ladder here as well.\n")
-    if not hasGun:
+    showInformation("-----  Transit Bay  -----" +
+      "\nYou are standing in the transit bay. To the east is a catwalk. To the north is an airlock. There" +
+      " is a ladder here as well.\n")
+    if not hasObjects[1]:
       printNow(" On the ground there is a gun that has been abandoned.\n")
 
   cmd = getDirection()
-  if ("take" in cmd or "pick up" in cmd or "get" in cmd) and "gun" in cmd and not hasGun:
-    hasGun = True
+  if ("take" in cmd or "pick up" in cmd or "get" in cmd) and "gun" in cmd and not hasObjects[1]:
+    hasObjects[1] = True
     printNow(" You have picked up the gun. Better to have this just in case.")
     cmd = getDirection()
   elif isQuit(cmd):
@@ -284,7 +297,7 @@ def roomFour():
   elif isHelp(cmd):
     return 4 
   elif cmd == "use ladder" or cmd == "go up" or cmd == "climb ladder":
-    if hasSpaceSuit:
+    if hasObjects[0]:
       printNow(" It is a bit awkward with the space suit, but you make your way up the ladder.")
     return 5
   elif cmd == "north" or cmd == "n":
@@ -306,17 +319,17 @@ def roomFour():
 #   Room name   -> "Missile Room"
 #   Exits       -> South (ladder) to room 4 ("Transit Bay")
 def roomFive():
-  global hasSpaceSuit
+  global hasObjects
   global winner
 
   if not isAndUpdateLastRoom(5):
-    printNow(" -----  Missile Room  -----")
-    printNow(" You are standing in the missile room. There is a big red button here and a ladder leading back")
-    printNow(" down to the transit bay.\n")
+    showInformation("-----  Missile Room  -----" +
+      "\nYou are standing in the missile room. There is a big red button here and a ladder leading back" +
+      " down to the transit bay.\n")
 
   cmd = getDirection()
   if "button" in cmd and "press" in cmd:
-    if hasSpaceSuit:
+    if hasObjects[0]:
       printNow(" You press the red button and hop into the missile.")
       winner = True
       return -1
@@ -348,11 +361,11 @@ def roomSix():
   global isDead
   
   if not isAndUpdateLastRoom(6):
-    printNow(" -----  Medical Closet  -----")
-    printNow(" You are standing in the medical supply closet. To the south is the medical bay.")
-    printNow(" Most of the medicines look like they have been taken. In the corner, you see a large")
-    printNow(" slime covered blob rifling through a pile of empty bottles and boxes. The alien seems")
-    printNow(" occupied and has not noticed you entering the closet yet.")
+    showInformation(" -----  Medical Closet  -----" +
+      "\n You are standing in the medical supply closet. To the south is the medical bay." +
+      " Most of the medicines look like they have been taken. In the corner, you see a large" +
+      " slime covered blob rifling through a pile of empty bottles and boxes. The alien seems" +
+      " occupied and has not noticed you entering the closet yet.")
 
   cmd = getDirection()
   if "alien" in cmd or "attack" in cmd:
@@ -421,24 +434,25 @@ def isHelp(command):
 # Params: (none)
 # Returns: (none)
 def displayHelp():
-  printNow("\n *----  Welcome to Marooned in Space!  -----*")
-  printNow(" |  You're in a large space station. A few hundred people used to live here, but they were attacked")
-  printNow(" |  by an unknown threat. Everyone evacuated. You are still here because you were in the medical")
-  printNow(" |  unit recovering from an explosion that heppened during routine maintenance. You were")
-  printNow(" |  unconscious when the attack happened and missed the action. Explore the ship, stay alive, find")
-  printNow(" |  your way back to earth...")
-  printNow(" *-----  Directions  -----*")
-  printNow(" |  Movement: north (n), south (s), east (e), west (w).")
-  printNow(" |  Items: get, press. Ex. \"get space suit\", \"press button\"")
-  printNow(" |  Quit: \"quit\"")
-  printNow(" |  Help: \"help\"")
-  printNow(" *")
+  showInformation(
+    "*----  Welcome to Marooned in Space!  -----*" +
+    "\nYou're in a large space station. A few hundred people used to live here, but they were attacked" +
+    " by an unknown threat. Everyone evacuated. You are still here because you were in the medical" +
+    " unit recovering from an explosion that heppened during routine maintenance. You were" +
+    " unconscious when the attack happened and missed the action. Explore the ship, stay alive, find" +
+    " your way back to earth..." +
+    "\n*-----  Directions  -----*" +
+    "\nMovement: north (n), south (s), east (e), west (w)." +
+    "\nItems: get, press. Ex. \"get space suit\", \"press button\"" +
+    "\nQuit: \"quit\"" +
+    "\nHelp: \"help\"")
 
 # Function: Displays invalid direction notification.
 # Params: (none)
 # Returns: (none)
 def displayInvalidDirection():
-  printNow(" Whoops, you can't do that.")
+  global name
+  printNow(" Whoops! You can't do that, " + name + ".")
 
 # Start the game automatically if we set the flat at the top of the code  
 if autoStart == True:
