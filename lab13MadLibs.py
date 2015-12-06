@@ -95,12 +95,7 @@ wordTypes = [
     "name"]
 chosenWords = []
 for wordType in wordTypes:
-    chosenWord = requestString("Enter a(n) " + wordType + ".")
-    chosenWords.append(chosenWord)
-# Create initial list with the number of words that need to be filled in,
-# based on the length of the article list.
-for index in range(len(article)-1):
-    words.append("")
+    chosenWords.append(requestString("Enter a(n) " + wordType + "."))
 # Fill entered words into appropriate spot.
 words = [
     chosenWords[0],
