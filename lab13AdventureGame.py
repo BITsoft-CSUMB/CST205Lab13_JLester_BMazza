@@ -57,11 +57,17 @@ autoStart = False
 # --------------------------------------------  Player variables  --------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-winner = False
-hasObjects = [False, False] # 0 is space suit, 1 is gun
-isSlideDoorOpen = False
-lastRoom = 0
-alienAlive = True
+hasObjects = [
+  False, # space suit
+  False # gun
+]
+status = [
+  False, # winner
+  False, # slide door open
+  True, # alien alive
+  0, # curent room
+  False # is player dead
+]
 name = ""
 
 # ------------------------------------------------------------------------------------------------------------
@@ -73,21 +79,13 @@ name = ""
 # Returns: (none)
 def play():
   global hasObjects
-  global isSlideDoorOpen
-  global winner
-  global lastRoom
-  global alienAlive
-  global isDead
+  global status
   global name
   
-  alienAlive = True
+  # Reset values if player wants to play again.
+  status = [False, False, True, 1, False]
   hasObjects = [False, False]
-  isSlideDoorOpen = False
-  exiting = False
-  winner = False
   room = 1 # Begin game in room 1 (medical bay)
-  lastRoom = 0
-  isDead = False
   
   displayHelp() # Welcome message and directions
   name = requestString("Enter your name.") # Get user's name
@@ -106,12 +104,12 @@ def play():
       room = roomFive()
     elif room == 6:
       room = roomSix()
-  if winner:
+  if status[0]:
     printNow(" Safe in the missile with your space suit, you brace yourself for the engine to fire. It's only")
     printNow(" a matter of time before you are back on earth with your family again. Who knows what your next")
     printNow(" adventure will be...\n *")
     printNow(" Congrats, " + name + "!!! You've successfully completed the game!")
-  elif isDead == True:
+  elif status[4]:
     printNow(" This would be a great time to reflect on the poor decision you've made...except you're dead.")
     printNow(" Try again.")
   elif room == -2: 
@@ -136,9 +134,9 @@ def play():
 #               -> South (airlock)                     to room 4 ("Transit Bay")
 #               -> [hidden exit] North (sliding panel) to room 6 ("Drug Closet")
 def roomOne():
-  global isSlideDoorOpen
+  global status
 
-  if not isAndUpdateLastRoom(1):
+  if not isAndUpdateCurrentRoom(1):
     showInformation("-----  Medical Bay  -----" +
       "\nYou are standing in the medical bay. To the south is an airlock. To the east is the utility tunnel." +
       " To the north is a medical cabinet that looks like it has already been plundered for supplies.\n")
@@ -150,7 +148,7 @@ def roomOne():
   if "cabinet" in cmd and ("slide" in cmd or "push" in cmd): 
     printNow(" You push the cabinet out of the way, opening a door to the north. It will spring shut if you walk")
     printNow(" away, so be careful.")
-    isSlideDoorOpen = True
+    status[1] = True
     return 6
 
   if isQuit(cmd):
@@ -162,7 +160,7 @@ def roomOne():
   elif cmd == "south" or cmd == "s":
     return 4
   elif cmd == "north" or cmd == "n":
-    if isSlideDoorOpen:
+    if status[1]:
       printNow(" You sneak into the hidden medical closet.")
       return 6
     else:
@@ -187,7 +185,7 @@ def roomOne():
 def roomTwo():
   global hasObjects
 
-  if not isAndUpdateLastRoom(2):
+  if not isAndUpdateCurrentRoom(2):
     showInformation("-----  Space Walk Utility Room  -----" +
       "\nYou are standing in the space walk utility room. To the north is the utility tunnel to the medical" +
       "bay. To the south is an airlock.\n")
@@ -224,33 +222,32 @@ def roomTwo():
 #               -> West (catwalk)                      to room 4 ("Transit Bay")
 def roomThree():
   global hasObjects
-  global alienAlive # Don't go shooting up the place if the alien is dead
-  global isDead
+  global status
 
-  if not isAndUpdateLastRoom(3):
+  if not isAndUpdateCurrentRoom(3):
     showInformation(" -----  Cafeteria  -----" +
       "\n You are standing in the cafeteria. To the west is a catwalk that looks like it could be sketchy. To" +
       " the north is an airlock.\n")
 
-    if alienAlive:
+    if status[2]:
        printNow(" In the corner of the room there is a shadow of what looks like a person. Possibly a survivor?\n")
 
   cmd = getDirection()
-  if alienAlive and "hello" in cmd: # Why would you tell hello at an alien, somebody has to die now...
+  if status[2] and "hello" in cmd: # Why would you tell hello at an alien, somebody has to die now...
     if hasObjects[1]:
       printNow(" You say hello and the dark figure turns around slowly to reveal a large alien with a hideous insect-like face.")
     if hasObjects[1]:
       printNow(" face. Before you can take a breath you have shot the gun and fired again and again for what seems like")
       printNow(" minutes, but is actually only a few seconds. The alien falls to the ground and shrivels into a round mass")
       printNow(" of inert exoskeleton.")
-      alienAlive = false
+      status[2] = false
       cmd = getDirection()
     else:
       printNow(" You say hello and the dark figure turns around slowly to reveal a large alien with a hideous insect-like ")
       printNow(" face. It looks at you for what feels like an eternity then raises what could be an arm and. Something ")
       printNow(" spear like shoots from it and peirces your abdomen. As you fall to the ground, the alien lands on your back ")
       printNow(" forcing you to the ground. You can feel him begin to eat the flesh from your back as the world goes dark.\n")
-      isDead = true
+      status[4] = true
       return -2
 
   if isQuit(cmd):
@@ -280,7 +277,7 @@ def roomThree():
 def roomFour():
   global hasObjects
 
-  if not isAndUpdateLastRoom(4):
+  if not isAndUpdateCurrentRoom(4):
     showInformation("-----  Transit Bay  -----" +
       "\nYou are standing in the transit bay. To the east is a catwalk. To the north is an airlock. There" +
       " is a ladder here as well.\n")
@@ -320,9 +317,9 @@ def roomFour():
 #   Exits       -> South (ladder) to room 4 ("Transit Bay")
 def roomFive():
   global hasObjects
-  global winner
+  global status
 
-  if not isAndUpdateLastRoom(5):
+  if not isAndUpdateCurrentRoom(5):
     showInformation("-----  Missile Room  -----" +
       "\nYou are standing in the missile room. There is a big red button here and a ladder leading back" +
       " down to the transit bay.\n")
@@ -331,7 +328,7 @@ def roomFive():
   if "button" in cmd and "press" in cmd:
     if hasObjects[0]:
       printNow(" You press the red button and hop into the missile.")
-      winner = True
+      status[0] = True
       return -1
     else:
       printNow(" Well, you fired the rocket, without being in it... great.")
@@ -358,9 +355,9 @@ def roomFive():
 #   Room name   -> "[hidden] Medical Closet"
 #   Exits       -> South (sliding panel) to room 1 ("Medical Bay")
 def roomSix():
-  global isDead
+  global status
   
-  if not isAndUpdateLastRoom(6):
+  if not isAndUpdateCurrentRoom(6):
     showInformation(" -----  Medical Closet  -----" +
       "\n You are standing in the medical supply closet. To the south is the medical bay." +
       " Most of the medicines look like they have been taken. In the corner, you see a large" +
@@ -372,7 +369,7 @@ def roomSix():
     printNow(" The alien turns around suddenly. It lunges in your direction, covering you in a mucus-like")
     printNow(" slime from head to toe. The world starts to spin and slowly you notice the tingling feeling")
     printNow(" as the slime begins to burn. The room begins to spin and then goes dark...\n")
-    isDead = true
+    status[4] = true
     return -2
   if isQuit(cmd):
     return -1
@@ -391,11 +388,11 @@ def roomSix():
 # Params:
 #   currentRoom -> The room (integer representation) that the user is currently in.
 # Returns: True if the user entered the same room they were already in, false otherwise.
-def isAndUpdateLastRoom(currentRoom):
-  global lastRoom
-  isLastRoom = lastRoom == currentRoom
-  lastRoom = currentRoom
-  return isLastRoom
+def isAndUpdateCurrentRoom(currentRoom):
+  global status
+  isCurrentRoom = status[3] == currentRoom
+  status[3] = currentRoom
+  return isCurrentRoom
 
 # Function: Gets instructions from user.
 # Params: (none)
