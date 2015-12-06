@@ -8,51 +8,126 @@ Date: December 2-8, 2015
 Filename: lab13MadLibs.py
 Python Version: 2.2.1 (JES 4.3)
 Version: 1
-# CST205 Lab 13 - Programmer: John Lester
+
+Original Article: "Sony shows a flawed PlayStation VR demo on a big stage"
+    from
+    http://venturebeat.com/2015/12/05/sony-shows-a-playstation-vr-demo-on-a-big-stage/
+
+Mad Libs Outline (by index of array):
+    0. product name ("VR")
+    1. your name ("Richard Marks")
+    2. place ("San Francisco")
+    3. adjective ("hot")
+    4. type of object ("virtual reality")
+    5. number ("30")
+    6. object plural ("Move controllers")
+    7. object plural ("discs")
+    8. type of place ("virtual space")
+    9. name ("Oculus Rift")
+
+Sony shows a flawed PlayStation (0) demo on a big stage
+
+
+Sony's (1) showed off the PlayStation (0) system at the PlayStation Experience
+fan event in San Francisco. Unfortunately, it went off the rails.
+
+Debuting next spring, the PlayStation (0) is Sony's entry in the (3) field
+of (4), which is expected to be a $(5) billion business by 2020.
+
+(1)'s two-person demo didn't work as planned. Their own motion-detecting 
+(6) failed. They couldn't throw (7) at their fellow (0) partner in a
+virtual room. The other player could throw (7) at (1), but it was
+clear that the controls weren't that precise. It took quite a long time before
+they were able to throw accurately.
+
+But the demo did show that two people could occupy the same (8) and throw
+(7) at each other. Most demos of (0) games have been single-player experiences.
+
+"I hope this demo gives you a taste of what PlayStation (0) is about," (1) said.
+
+Sony is launching the PlayStation (0) early next year. It will
+compete with the (9) coming from Facebook's Oculus (0) division.
 """
 
-#article from http://venturebeat.com/2015/12/05/sony-shows-a-playstation-vr-demo-on-a-big-stage/
 article = [
-  "Sony's Richard Marks showed off the PlayStation ", #_0 (VR) 0
-  " system at the PlayStation Experience fan event in ", #_1 (San Francisco) 1
-  ". Unfortunately, it went off the rails. \n\nDebuting next spring, the PlayStation ", #_2 (VR) 0
-  " is Sony's entry in the hot field of ", #_3 (virtual reality) 3
-  ", which is expected to be a $30 billion business by 2020. \n\nMarks' two-person demo didn't work as planned. His own motion-detection ", #_4 (Move controllers) 4
-  " failed. He couldn't throw ", #_5 (discs) 5
-  " at his fellow VR partner in a virtual room. The other player could throw ", #_6 (discs) 5
-  " at Marks, but it was clear that the controls weren't that precise. It took quite a long time before he was able to throw accurately. \n\nBut the demo did show that two people could occupy the same ", #_7 (virtual space) 7 
-  " and throw ", #_8 (discs) 5
-  " at each other. Most demos of ", #_9 (VR) 0
-  " games have been single-player experiences. \n\n\"I hope this demo gives you a taste of what PlayStation ", #_10 (VR) 0
-  " is about,\" Marks said. \n\nSony is launching the PlayStation ", #_11 (VR) 0
-  " early next year. It will compete with the ", #_12 (Oculus Rift) 12
-  " coming from Facebook's Oculus ", #_13 (VR) 0
-  " division" #_14 (.) -
+    "\n\n Sony shows a flawed PlayStation ", # 0 "product name"
+    " demo on a big stage \n\n\n Sony's ", # 1 "your name"
+    " showed off the PlayStation ", # 0 "product name"
+    " system at the PlayStation Experience\n fan event in ", # 2 "place"
+    ". Unfortunately, it went off the rails. \n\n Debuting next spring," +
+        " the PlayStation ", # 0 "product name"
+    " is Sony's entry in the ", # 3 "adjective"
+    " field\n of ", # 4 "type of object"
+    ", which is expected to be a $", # 5 "number"
+    " billion business by 2020. \n\n ", # 1 "your name"
+    "'s two-person demo didn't work as planned. Their own" +
+        " motion-detecting\n ", # 6 "object plural"
+    " failed. They couldn't throw ", # 7 "object plural"
+    " at their fellow ", # 0 "product name"
+    " partner in a\n virtual room. The other player could" +
+        " throw ", #7 "object plural"
+    " at ", # 1 "your name"
+    ", but it was\n clear that the controls weren't that precise. It took" +
+        " quite a long time before\n they were able to throw accurately." +
+        "\n\n But the demo did show that two people could occupy the" +
+        " same ", # 8 "type of place"
+    " and throw\n ", # 7 "object plural"
+    " at each other. Most demos of ", # 0 "product name"
+    " games have been single-player experiences.\n\n \"I hope this demo" +
+        " gives you a taste of what PlayStation ", # 0 "product name"
+    " is about,\" ", # 1 "your name"
+    " said.\n\n Sony is launching the PlayStation ", # 0 "product name"
+    " early next year. It will\n compete with the ", # 9 "product name"
+    " coming from Facebook's Oculus ", # 0 "product name"
+    " division."
 ]
-
-words = []
-for key in range(len(article)):
-  words.append("")
-words[0] = requestString('Give me a name: ') #VR
-words[1] = requestString('Give me a place: ') #San Francisco
-words[2] = words[0]
-words[3] = requestString('Give me a type of object: ') #virtual reality
-words[4] = requestString('Give me an object: ') #Move controller
-words[5] = requestString('Give me another object: ') #discs
-words[6] = words[5]
-words[7] = requestString('Give me a type of place: ') #virtual space
-words[8] = words[5]
-words[9] = words[0]
-words[10] = words[0]
-words[11] = words[0]
-words[12] = requestString('Give me another name: ') #Oculus Rift
-words[13] = words[0]
-words[14] = ".\n"
-
+# Get words from the user.
+wordTypes = [
+    "name",
+    "your name",
+    "place",
+    "adjective",
+    "type of object",
+    "number",
+    "object plural",
+    "object plural",
+    "type of place",
+    "name"]
+chosenWords = []
+for wordType in wordTypes:
+    chosenWord = requestString("Enter a(n) " + wordType + ".")
+    chosenWords.append(chosenWord)
+# Create initial list with the number of words that need to be filled in,
+# based on the length of the article list.
+for index in range(len(article)-1):
+    words.append("")
+# Fill entered words into appropriate spot.
+words = [
+    chosenWords[0],
+    chosenWords[1],
+    chosenWords[0],
+    chosenWords[2],
+    chosenWords[0],
+    chosenWords[3],
+    chosenWords[4],
+    chosenWords[5],
+    chosenWords[1],
+    chosenWords[6],
+    chosenWords[7],
+    chosenWords[0],
+    chosenWords[7],
+    chosenWords[1],
+    chosenWords[8],
+    chosenWords[7],
+    chosenWords[0],
+    chosenWords[0],
+    chosenWords[1],
+    chosenWords[0],
+    chosenWords[9]
+]
+# Combine the article with the entered words and display it.
 newString = ""
-for key in range(len(words)):
-  newString += article[key]
-  newString += words[key]
-for num in range(5):
-  printNow("")
+for index in range(len(words)):
+    newString += article[index] + words[index]
+newString += article[len(article)-1]
 printNow(newString)
